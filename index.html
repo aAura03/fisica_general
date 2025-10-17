@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:: FISICA GENERAL 3S1V :: INDEX CYBER-NEON</title>
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos Base inspirados en el archivo Transferencia-de-calor.html */
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #0d1117; /* Fondo oscuro (GitHub Dark) */
+            color: #c9d1d9; /* Gris claro para el texto por defecto */
+            min-height: 100vh;
+            padding: 2rem;
+            margin: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-font {
+            font-family: 'Major Mono Display', monospace;
+        }
+
+        /* Colores Neón */
+        .neon-cyan { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 10px rgba(0, 255, 255, 0.4); }
+        .text-fuchsia-400 { color: #ff00ff; }
+        .text-cyan-400 { color: #00ffff; }
+
+        /* Contenedor principal estilo terminal */
+        .terminal-container {
+            width: 100%;
+            max-width: 800px;
+            border: 3px solid #ff00ff;
+            box-shadow: 0 0 15px #ff00ff, 0 0 30px rgba(255, 0, 255, 0.3);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            background-color: #1c212a;
+        }
+        
+        /* Estilo para los enlaces (Links) */
+        .link-entry {
+            background-color: #0a111a;
+            border: 1px solid #00ffff;
+            color: #00ff00; /* Texto verde como en un terminal */
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: block;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .link-entry:hover {
+            background-color: #00ffff;
+            color: #0d1117; /* Texto oscuro al pasar el ratón */
+            border-color: #ff00ff;
+            box-shadow: 0 0 10px #00ffff;
+            transform: scale(1.02);
+        }
+        
+        .link-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .link-description {
+            font-size: 0.9rem;
+            color: #c9d1d9;
+        }
+
+        /* Indicador de estado del link */
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 0 5px #00ff00;
+        }
+        
+        /* Estilo de la firma */
+        .signature {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            color: #ffff00;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header style="margin-bottom: 3rem; text-align: center;">
+        <h1 class="header-font neon-cyan" style="font-size: 3rem; margin-bottom: 0.5rem;">
+            [:: FÍSICA GENERAL 3S1V ::]
+        </h1>
+        <p class="text-fuchsia-400" style="font-size: 1.5rem;">
+            &gt; Menú de Acceso a Laboratorios
+        </p>
+    </header>
+
+    <div class="terminal-container">
+        <h2 class="header-font text-cyan-400" style="font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid #00ffff; padding-bottom: 0.5rem;">
+            :: ARCHIVOS DE DATOS (LABS) ::
+        </h2>
+
+        <a href="Transferencia-de-calor.html" class="link-entry">
+            <div class="link-title">
+                <span class="status-dot"></span> MÓDULO HT-404 :: Transferencia de Calor
+            </div>
+            <div class="link-description">
+                Simulador de Conducción 1D, Calculadora Q=mcΔT y Teoría (Ley Cero, Primera Ley).
+            </div>
+        </a>
+
+        <a href="Termodinamica.html" class="link-entry">
+            <div class="link-title">
+                <span class="status-dot"></span> LAB :: Termodinámica y Movimiento Molecular
+            </div>
+            <div class="link-description">
+                Simulador Molecular, Cálculos de Primera Ley ($\Delta U = Q - W$), Conversión de Temperaturas y Capacidad Calorífica.
+            </div>
+        </a>
+        
+        <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #ff00ff; text-align: center;">
+            [FIN DE REGISTRO. Acceso Autorizado]
+        </p>
+
+    </div>
+    
+    <footer class="signature">
+        [ Operador: <span style="color: #00ff00;">Aura Romero</span> ]
+    </footer>
+
+</body>
+</html>

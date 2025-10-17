@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Termodinámica - Aura Romero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .molecule {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            position: absolute;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        .molecule.hot {
+            animation: float-fast 0.5s ease-in-out infinite;
+            background: #ef4444;
+        }
+        
+        .molecule.medium {
+            animation: float-medium 1s ease-in-out infinite;
+            background: #f59e0b;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+        }
+        
+        @keyframes float-medium {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(15px, -8px); }
+            75% { transform: translate(-8px, 12px); }
+        }
+        
+        @keyframes float-fast {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(20px, -15px); }
+            50% { transform: translate(-15px, 20px); }
+            75% { transform: translate(25px, 10px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        .fire {
+            animation: flicker 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .thermometer-mercury {
+            transition: height 0.3s ease;
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-full">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">🔬 Laboratorio de Termodinámica</h1>
+            <p class="text-xl text-blue-100">👩‍🔬 Aura Romero</p>
+            <div class="mt-4 text-lg text-blue-100">
+                🌡️ Explorando las Leyes de la Termodinámica 🔥
+            </div>
+        </div>
+
+        <!-- Definiciones Básicas -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📚 Conceptos Fundamentales</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-800">🌡️ Temperatura</h3>
+                    <p class="text-sm text-gray-700">Medida de la energía cinética promedio de las moléculas</p>
+                </div>
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-red-800">🔥 Calor</h3>
+                    <p class="text-sm text-gray-700">Energía en tránsito debido a diferencias de temperatura</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-green-800">⚡ Energía</h3>
+                    <p class="text-sm text-gray-700">Capacidad de realizar trabajo o producir cambios</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulador de Movimiento Molecular -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🧪 Simulador de Movimiento Molecular</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="bg-gray-100 rounded-lg p-4 h-64 relative overflow-hidden" id="moleculeContainer">
+                        <div class="text-center text-gray-600 mb-2">Contenedor de Moléculas</div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-center space-x-4">
+                        <span class="fire text-4xl cursor-pointer" onclick="adjustHeat(-1)">🧊</span>
+                        <div class="flex-1">
+                            <input type="range" id="heatSlider" min="0" max="100" value="25" 
+                                   class="w-full" onchange="updateHeat(this.value)">
+                            <div class="text-center mt-2">
+                                <span id="temperatureDisplay">25°C</span>
+                            </div>
+                        </div>
+                        <span class="fire text-4xl cursor-pointer" onclick="adjustHeat(1)">🔥</span>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-800 mb-2">📊 Estado Actual</h3>
+                        <div class="space-y-2 text-sm">
+                            <div>🌡️ Temperatura: <span id="tempValue">25°C</span></div>
+                            <div>⚡ Energía Cinética: <span id="kineticEnergy">Baja</span></div>
+                            <div>🏃‍♂️ Velocidad Molecular: <span id="molecularSpeed">Lenta</span></div>
+                            <div>📈 Estado: <span id="matterState">Líquido</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-800 mb-2">🔬 Observaciones</h3>
+                        <p class="text-sm text-gray-700" id="observations">
+                            A mayor temperatura, mayor movimiento molecular y velocidad.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primera Ley de la Termodinámica -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">⚖️ Primera Ley: ΔU = Q - W</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-800 mb-2">🔧 Parámetros del Sistema</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium">Calor Añadido (Q) - Joules:</label>
+                                <input type="number" id="heatInput" value="100" 
+                                       class="w-full p-2 border rounded" onchange="calculateFirstLaw()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Trabajo Realizado (W) - Joules:</label>
+                                <input type="number" id="workInput" value="30" 
+                                       class="w-full p-2 border rounded" onchange="calculateFirstLaw()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-green-800 mb-2">📈 Resultados</h3>
+                    <div class="space-y-2 text-sm">
+                        <div>🔥 Calor (Q): <span id="qValue">100 J</span></div>
+                        <div>⚙️ Trabajo (W): <span id="wValue">30 J</span></div>
+                        <div class="font-bold text-lg">🔋 Cambio Energía Interna (ΔU): <span id="deltaU">70 J</span></div>
+                        <div class="mt-3 p-2 bg-white rounded">
+                            <strong>Estado del Sistema:</strong> <span id="systemState">Energía aumenta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversiones de Temperatura -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🌡️ Conversiones y Escalas de Temperatura</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Termómetros -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-center">🌡️ Termómetros</h3>
+                    <div class="flex justify-around">
+                        <div class="text-center">
+                            <div class="w-6 h-32 bg-gray-200 rounded-full relative mx-auto">
+                                <div id="celsiusMercury" class="w-4 h-8 bg-red-500 rounded-full absolute bottom-1 left-1 thermometer-mercury"></div>
+                            </div>
+                            <div class="text-xs mt-2">Celsius</div>
+                            <div id="celsiusReading" class="font-bold">25°C</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-6 h-32 bg-gray-200 rounded-full relative mx-auto">
+                                <div id="fahrenheitMercury" class="w-4 h-8 bg-blue-500 rounded-full absolute bottom-1 left-1 thermometer-mercury"></div>
+                            </div>
+                            <div class="text-xs mt-2">Fahrenheit</div>
+                            <div id="fahrenheitReading" class="font-bold">77°F</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-6 h-32 bg-gray-200 rounded-full relative mx-auto">
+                                <div id="kelvinMercury" class="w-4 h-8 bg-green-500 rounded-full absolute bottom-1 left-1 thermometer-mercury"></div>
+                            </div>
+                            <div class="text-xs mt-2">Kelvin</div>
+                            <div id="kelvinReading" class="font-bold">298 K</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculadora -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-800 mb-3">🧮 Calculadora de Conversión</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium">Temperatura:</label>
+                            <input type="number" id="tempConverter" value="25" 
+                                   class="w-full p-2 border rounded" onchange="convertTemperatures()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium">Escala:</label>
+                            <select id="tempScale" class="w-full p-2 border rounded" onchange="convertTemperatures()">
+                                <option value="celsius">Celsius (°C)</option>
+                                <option value="fahrenheit">Fahrenheit (°F)</option>
+                                <option value="kelvin">Kelvin (K)</option>
+                            </select>
+                        </div>
+                        <div id="conversionResults" class="text-sm space-y-1">
+                            <div>📊 Celsius: 25°C</div>
+                            <div>📊 Fahrenheit: 77°F</div>
+                            <div>📊 Kelvin: 298.15 K</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Puntos de Referencia -->
+                <div class="bg-yellow-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-yellow-800 mb-3">📍 Puntos de Referencia</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>🧊 Punto de congelación H₂O:</span>
+                            <span>0°C / 32°F / 273K</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💨 Punto de ebullición H₂O:</span>
+                            <span>100°C / 212°F / 373K</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🌡️ Temperatura ambiente:</span>
+                            <span>25°C / 77°F / 298K</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>🔥 Temperatura corporal:</span>
+                            <span>37°C / 98.6°F / 310K</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>❄️ Cero absoluto:</span>
+                            <span>-273°C / -459°F / 0K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capacidad Calorífica -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">🔥 Capacidad Calorífica</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="bg-orange-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-orange-800 mb-2">🧮 Calculadora</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium">Masa (kg):</label>
+                                <input type="number" id="mass" value="1" step="0.1" 
+                                       class="w-full p-2 border rounded" onchange="calculateHeatCapacity()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Calor Específico (J/kg·K):</label>
+                                <select id="specificHeat" class="w-full p-2 border rounded" onchange="calculateHeatCapacity()">
+                                    <option value="4186">Agua (4186)</option>
+                                    <option value="900">Aluminio (900)</option>
+                                    <option value="385">Cobre (385)</option>
+                                    <option value="450">Hierro (450)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Cambio de Temperatura (K):</label>
+                                <input type="number" id="tempChange" value="10" 
+                                       class="w-full p-2 border rounded" onchange="calculateHeatCapacity()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-800 mb-2">📊 Resultados</h3>
+                        <div class="space-y-2 text-sm">
+                            <div>🔥 Calor Requerido: <span id="heatRequired">41,860 J</span></div>
+                            <div>⚡ Capacidad Calorífica: <span id="heatCapacity">4,186 J/K</span></div>
+                            <div>📈 Fórmula: Q = m × c × ΔT</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-red-800 mb-2">🔥 Simulador de Calentamiento</h3>
+                        <div class="bg-gray-200 h-32 rounded-lg relative overflow-hidden" id="heatingSimulator">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-red-500 to-orange-300 transition-all duration-1000" 
+                                 id="heatLevel" style="height: 25%"></div>
+                            <div class="absolute inset-0 flex items-center justify-center text-white font-bold text-lg" id="simTemp">
+                                25°C
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-center space-x-2">
+                            <button onclick="startHeating()" class="bg-red-500 text-white px-3 py-1 rounded text-sm">🔥 Calentar</button>
+                            <button onclick="stopHeating()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">❄️ Enfriar</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-800 mb-2">📋 Tabla de Datos</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-purple-100">
+                                        <th class="p-1">Tiempo (s)</th>
+                                        <th class="p-1">Temp (°C)</th>
+                                        <th class="p-1">Calor (J)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTable">
+                                    <tr><td class="p-1 text-center">0</td><td class="p-1 text-center">25</td><td class="p-1 text-center">0</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variables de Estado -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 Variables de Estado (P, V, T)</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-800 mb-3">🌡️ Temperatura</h3>
+                    <div class="space-y-2">
+                        <input type="range" id="stateTemp" min="200" max="400" value="300" 
+                               class="w-full" onchange="updateStateVariables()">
+                        <div class="text-center font-bold" id="stateTempValue">300 K</div>
+                        <div class="text-xs text-center text-gray-600">200K - 400K</div>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-red-800 mb-3">📏 Volumen</h3>
+                    <div class="space-y-2">
+                        <input type="range" id="stateVolume" min="1" max="10" value="5" step="0.1"
+                               class="w-full" onchange="updateStateVariables()">
+                        <div class="text-center font-bold" id="stateVolumeValue">5.0 L</div>
+                        <div class="text-xs text-center text-gray-600">1L - 10L</div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-green-800 mb-3">⚡ Presión</h3>
+                    <div class="space-y-2">
+                        <div class="text-center font-bold" id="statePressureValue">1.0 atm</div>
+                        <div class="text-xs text-center text-gray-600">Calculada: PV = nRT</div>
+                        <div class="text-xs text-center">n = 1 mol, R = 0.082</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-yellow-50 p-4 rounded-lg">
+                <h3 class="font-bold text-yellow-800 mb-2">🔬 Relaciones Observadas</h3>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <strong>📈 Ley de Charles:</strong> V ∝ T (P constante)
+                        <br><span class="text-gray-600">Mayor temperatura → Mayor volumen</span>
+                    </div>
+                    <div>
+                        <strong>📈 Ley de Gay-Lussac:</strong> P ∝ T (V constante)
+                        <br><span class="text-gray-600">Mayor temperatura → Mayor presión</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let molecules = [];
+        let heatingInterval;
+        let dataPoints = [];
+        let currentTime = 0;
+
+        // Inicializar moléculas
+        function initMolecules() {
+            const container = document.getElementById('moleculeContainer');
+            molecules = [];
+            container.innerHTML = '<div class="text-center text-gray-600 mb-2">Contenedor de Moléculas</div>';
+            
+            for (let i = 0; i < 20; i++) {
+                const molecule = document.createElement('div');
+                molecule.className = 'molecule';
+                molecule.style.left = Math.random() * 90 + '%';
+                molecule.style.top = Math.random() * 80 + 20 + '%';
+                container.appendChild(molecule);
+                molecules.push(molecule);
+            }
+        }
+
+        function updateHeat(value) {
+            const temp = parseInt(value);
+            document.getElementById('temperatureDisplay').textContent = temp + '°C';
+            document.getElementById('tempValue').textContent = temp + '°C';
+            
+            // Actualizar estado de moléculas
+            molecules.forEach(molecule => {
+                molecule.className = 'molecule';
+                if (temp > 60) {
+                    molecule.classList.add('hot');
+                } else if (temp > 30) {
+                    molecule.classList.add('medium');
+                }
+            });
+            
+            // Actualizar información
+            let energy, speed, state, observations;
+            
+            if (temp < 0) {
+                energy = 'Muy Baja'; speed = 'Muy Lenta'; state = 'Sólido';
+                observations = 'Las moléculas vibran en posiciones fijas. Movimiento mínimo.';
+            } else if (temp < 30) {
+                energy = 'Baja'; speed = 'Lenta'; state = 'Líquido';
+                observations = 'Movimiento moderado. Las moléculas se deslizan unas sobre otras.';
+            } else if (temp < 70) {
+                energy = 'Media'; speed = 'Moderada'; state = 'Líquido';
+                observations = 'Incremento notable en la velocidad molecular y energía cinética.';
+            } else {
+                energy = 'Alta'; speed = 'Rápida'; state = 'Gas';
+                observations = 'Movimiento muy rápido. Las moléculas se mueven libremente en todas direcciones.';
+            }
+            
+            document.getElementById('kineticEnergy').textContent = energy;
+            document.getElementById('molecularSpeed').textContent = speed;
+            document.getElementById('matterState').textContent = state;
+            document.getElementById('observations').textContent = observations;
+        }
+
+        function adjustHeat(direction) {
+            const slider = document.getElementById('heatSlider');
+            const currentValue = parseInt(slider.value);
+            const newValue = Math.max(0, Math.min(100, currentValue + (direction * 10)));
+            slider.value = newValue;
+            updateHeat(newValue);
+        }
+
+        function calculateFirstLaw() {
+            const Q = parseFloat(document.getElementById('heatInput').value) || 0;
+            const W = parseFloat(document.getElementById('workInput').value) || 0;
+            const deltaU = Q - W;
+            
+            document.getElementById('qValue').textContent = Q + ' J';
+            document.getElementById('wValue').textContent = W + ' J';
+            document.getElementById('deltaU').textContent = deltaU + ' J';
+            
+            let systemState;
+            if (deltaU > 0) {
+                systemState = 'Energía aumenta - Sistema se calienta';
+            } else if (deltaU < 0) {
+                systemState = 'Energía disminuye - Sistema se enfría';
+            } else {
+                systemState = 'Energía constante - Equilibrio';
+            }
+            
+            document.getElementById('systemState').textContent = systemState;
+        }
+
+        function convertTemperatures() {
+            const value = parseFloat(document.getElementById('tempConverter').value) || 0;
+            const scale = document.getElementById('tempScale').value;
+            
+            let celsius, fahrenheit, kelvin;
+            
+            switch(scale) {
+                case 'celsius':
+                    celsius = value;
+                    fahrenheit = (celsius * 9/5) + 32;
+                    kelvin = celsius + 273.15;
+                    break;
+                case 'fahrenheit':
+                    fahrenheit = value;
+                    celsius = (fahrenheit - 32) * 5/9;
+                    kelvin = celsius + 273.15;
+                    break;
+                case 'kelvin':
+                    kelvin = value;
+                    celsius = kelvin - 273.15;
+                    fahrenheit = (celsius * 9/5) + 32;
+                    break;
+            }
+            
+            document.getElementById('conversionResults').innerHTML = `
+                <div>📊 Celsius: ${celsius.toFixed(1)}°C</div>
+                <div>📊 Fahrenheit: ${fahrenheit.toFixed(1)}°F</div>
+                <div>📊 Kelvin: ${kelvin.toFixed(1)} K</div>
+            `;
+            
+            // Actualizar termómetros
+            updateThermometers(celsius);
+            
+            document.getElementById('celsiusReading').textContent = celsius.toFixed(1) + '°C';
+            document.getElementById('fahrenheitReading').textContent = fahrenheit.toFixed(1) + '°F';
+            document.getElementById('kelvinReading').textContent = kelvin.toFixed(1) + ' K';
+        }
+
+        function updateThermometers(celsius) {
+            const maxTemp = 100;
+            const minTemp = -20;
+            const percentage = Math.max(0, Math.min(100, ((celsius - minTemp) / (maxTemp - minTemp)) * 100));
+            
+            document.getElementById('celsiusMercury').style.height = percentage + '%';
+            document.getElementById('fahrenheitMercury').style.height = percentage + '%';
+            document.getElementById('kelvinMercury').style.height = percentage + '%';
+        }
+
+        function calculateHeatCapacity() {
+            const mass = parseFloat(document.getElementById('mass').value) || 1;
+            const specificHeat = parseFloat(document.getElementById('specificHeat').value) || 4186;
+            const tempChange = parseFloat(document.getElementById('tempChange').value) || 10;
+            
+            const heatRequired = mass * specificHeat * tempChange;
+            const heatCapacity = mass * specificHeat;
+            
+            document.getElementById('heatRequired').textContent = heatRequired.toLocaleString() + ' J';
+            document.getElementById('heatCapacity').textContent = heatCapacity.toLocaleString() + ' J/K';
+        }
+
+        function startHeating() {
+            if (heatingInterval) clearInterval(heatingInterval);
+            
+            let currentTemp = 25;
+            let time = 0;
+            
+            heatingInterval = setInterval(() => {
+                currentTemp += 2;
+                time += 1;
+                
+                if (currentTemp > 100) {
+                    clearInterval(heatingInterval);
+                    return;
+                }
+                
+                const percentage = Math.min(100, ((currentTemp - 25) / 75) * 100);
+                document.getElementById('heatLevel').style.height = percentage + '%';
+                document.getElementById('simTemp').textContent = currentTemp + '°C';
+                
+                // Agregar datos a la tabla
+                const heat = (currentTemp - 25) * 4186; // Asumiendo 1kg de agua
+                addDataPoint(time, currentTemp, heat);
+                
+            }, 500);
+        }
+
+        function stopHeating() {
+            if (heatingInterval) {
+                clearInterval(heatingInterval);
+                heatingInterval = null;
+            }
+            
+            // Enfriar gradualmente
+            let currentTemp = parseInt(document.getElementById('simTemp').textContent);
+            const coolingInterval = setInterval(() => {
+                currentTemp -= 3;
+                if (currentTemp <= 25) {
+                    currentTemp = 25;
+                    clearInterval(coolingInterval);
+                }
+                
+                const percentage = Math.max(0, ((currentTemp - 25) / 75) * 100);
+                document.getElementById('heatLevel').style.height = percentage + '%';
+                document.getElementById('simTemp').textContent = currentTemp + '°C';
+            }, 300);
+        }
+
+        function addDataPoint(time, temp, heat) {
+            const tableBody = document.getElementById('dataTable');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="p-1 text-center">${time}</td>
+                <td class="p-1 text-center">${temp}</td>
+                <td class="p-1 text-center">${Math.round(heat)}</td>
+            `;
+            tableBody.appendChild(row);
+            
+            // Mantener solo las últimas 5 filas
+            if (tableBody.children.length > 6) {
+                tableBody.removeChild(tableBody.children[1]);
+            }
+        }
+
+        function updateStateVariables() {
+            const temp = parseFloat(document.getElementById('stateTemp').value);
+            const volume = parseFloat(document.getElementById('stateVolume').value);
+            
+            // PV = nRT, donde n = 1 mol, R = 0.082 L·atm/(mol·K)
+            const pressure = (1 * 0.082 * temp) / volume;
+            
+            document.getElementById('stateTempValue').textContent = temp + ' K';
+            document.getElementById('stateVolumeValue').textContent = volume.toFixed(1) + ' L';
+            document.getElementById('statePressureValue').textContent = pressure.toFixed(2) + ' atm';
+        }
+
+        // Inicializar todo
+        document.addEventListener('DOMContentLoaded', function() {
+            initMolecules();
+            updateHeat(25);
+            calculateFirstLaw();
+            convertTemperatures();
+            calculateHeatCapacity();
+            updateStateVariables();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98d931f312ca1dc2',t:'MTc2MDI5OTM0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
